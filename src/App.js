@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import HomePage from './pages/Homepage';
+import BookshelfPage from './pages/BookshelfPage';
 
-function App() {
+const App = () => {
+  const [bookshelf, setBookshelf] = useState([]);
+
+  useEffect(() => {
+    const savedBooks = JSON.parse(localStorage.getItem('bookshelf')) || [];
+    setBookshelf(savedBooks);
+  }, []);
+
+  const handleAddToBookshelf = (book) => {
+    const newBookshelf = [...bookshelf, book];
+    setBookshelf(newBookshelf);
+    localStorage.setItem('bookshelf', JSON.stringify(newBookshelf));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Navbar />
+      <Routes>
+        <Route
+          path="/"
+          element={<HomePage onAddToBookshelf={handleAddToBookshelf} />}
+        />
+        <Route
+          path="/bookshelf"
+          element={<BookshelfPage books={bookshelf} />}
+        />
+      </Routes>
+      </>
   );
-}
+};
 
 export default App;
